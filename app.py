@@ -5,14 +5,15 @@ import openai
 
 app = Flask(__name__)
 
-# Clé OpenAI (à mettre en variable d'environnement en prod)
-openai.api_key = os.getenv("OPENAI_API_KEY") or "sk-***"
+# Clé OpenAI : passer par variable d'environnement en prod
+openai.api_key = os.getenv("OPENAI_API_KEY") or "sk-..."
 
+# Palette ASCII personnalisée avec caractères spéciaux
 ASCII_CHARS = "@%#*+=-:.|←→≠±Å¥$§× "
 
 def resize_image(image, new_width=150):
     width, height = image.size
-    ratio = height / width / 1.8
+    ratio = height / width / 1.8  # Ratio pour rendre plus compact
     new_height = int(new_width * ratio)
     return image.resize((new_width, new_height))
 
@@ -58,16 +59,21 @@ def index():
 
 @app.route("/stylize_ascii", methods=["POST"])
 def stylize_ascii():
+    """
+    Reçoit le texte ASCII + couleur choisie, et demande à GPT-4 de styliser façon hacker neon.
+    """
     data = request.get_json(force=True)
     ascii_text = data.get("ascii_text", "")
+    color = data.get("color", "#39ff14")  # Couleur fluo par défaut vert neon
 
     if not ascii_text:
         return jsonify({"error": "Aucun ASCII reçu"}), 400
 
     prompt = (
-        "Améliore ce texte ASCII pour lui donner un style hacker neon fluo, "
-        "ajoute des effets visuels en texte, reste en ASCII art, "
-        "ne modifie pas la structure:\n\n"
+        "Améliore cet art ASCII pour lui donner un style cyberpunk/hacker avec effet fluo. "
+        f"La couleur dominante choisie est : {color}. "
+        "Ajoute des effets visuels textuels (comme des encadrements, titres stylisés), reste en ASCII pur. "
+        "Ne modifie pas l'alignement de base :\n\n"
         f"{ascii_text}"
     )
 
