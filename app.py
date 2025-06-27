@@ -8,7 +8,13 @@ app = Flask(__name__)
 # Met ta clé API OpenAI en variable d'environnement ou ici directement (pas recommandé en prod)
 openai.api_key = os.getenv("OPENAI_API_KEY") or "sk-***"
 
-ASCII_CHARS = "@%#*+=-:. "
+ASCII_CHARS = "$@B%8&WM#*oahkbdpqwmZ0OQLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
+
+def pixel_to_ascii(pixel_value):
+    # pixel_value entre 0 et 255
+    interval = 255 / (len(ASCII_CHARS) - 1)
+    index = int(pixel_value / interval)
+    return ASCII_CHARS[index]
 
 def resize_image(image, new_width=100):
     width, height = image.size
