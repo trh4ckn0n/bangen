@@ -55,4 +55,4 @@ def download():
     return send_file(buf, as_attachment=True, download_name="ascii_output.txt")
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", debug=False)
