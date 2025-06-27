@@ -1,32 +1,68 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>ASCII Art Generator</title>
-<link rel="stylesheet" href="/static/style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ASCII Art Generator - trhacknon</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <h1>ASCII Art by trhacknon</h1>
-  <form method="POST" enctype="multipart/form-data">
-    <input type="file" name="image" required>
-    <input type="number" name="width" value="100" min="20" max="300">
-    <label>Couleur:</label><input type="color" name="color" value="#00ffff">
-    <label>Ombre:</label><input type="range" name="shadow" min="0" max="10" value="2">
+  <header>
+    <h1>ASCII Art Generator <span class="subtitle">by trhacknon</span></h1>
+  </header>
+
+  <form method="POST" enctype="multipart/form-data" class="form-upload">
+    <input type="file" name="image" required accept="image/png, image/jpeg" />
+    <label for="width">Largeur :</label>
+    <input type="number" name="width" min="20" max="300" value="100" />
+
+    <label for="color">Couleur :</label>
+    <input type="color" name="color" value="{{ color }}" />
+
+    <label for="shadow">Ombre (px) :</label>
+    <input type="range" name="shadow" min="0" max="10" value="{{ shadow }}" />
+
     <button type="submit">🖋️ Générer</button>
   </form>
 
   {% if ascii %}
-  <div class="ascii" style="
-    color: {{ request.form.color }};
-    text-shadow: {{ request.form.shadow }}px {{ request.form.shadow }}px 1px #000, 0 0 5px {{ request.form.color }};
-  ">
-    {{ ascii|e }}
-  </div>
-  <a href="{{ url_for('download') }}?ascii={{ ascii|urlencode }}" class="download">📥 Télécharger ASCII</a>
+  <section class="result-section">
+    <h2>Résultat ASCII Art</h2>
+    <pre class="ascii" style="color: {{ color }}; text-shadow:
+      0 0 {{ shadow }}px #0ffccf,
+      0 0 {{ shadow // 2 }}px #0ffccf;">
+      {{ ascii|e }}
+    </pre>
+
+    <div class="buttons-download">
+      <a href="{{ url_for('download_txt') }}?ascii={{ ascii|urlencode }}" class="btn">📥 Télécharger TXT</a>
+      <a href="{{ url_for('download_svg') }}?svg={{ ascii_svg|urlencode }}" class="btn">📥 Télécharger SVG</a>
+    </div>
+
+    <h2>SVG Preview</h2>
+    <div class="svg-preview">
+      {{ ascii_svg|safe }}
+    </div>
+  </section>
   {% endif %}
 
-  {% if analysis %}
-  <div class="analysis"><b>GPT-4 Vision:</b> {{ analysis }}</div>
-  {% endif %}
+  <footer>
+    <p>© 2025 trhacknon - ASCII Art Generator</p>
+  </footer>
+
+<script>
+// Animation néon clignotant sur le texte ASCII (pré)
+const asciiElem = document.querySelector(".ascii");
+if(asciiElem){
+  let opacity = 1, direction = -0.05;
+  setInterval(() => {
+    opacity += direction;
+    if(opacity <= 0.5) direction = 0.05;
+    else if(opacity >= 1) direction = -0.05;
+    asciiElem.style.opacity = opacity.toFixed(2);
+  }, 50);
+}
+</script>
+
 </body>
 </html>
