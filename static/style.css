@@ -19,6 +19,19 @@ header h1 {
   margin-bottom: 10px;
 }
 
+pre.ascii-art {
+  font-family: monospace;
+  color: #0ff;
+  background-color: #000;
+  text-shadow:
+    0 0 5px #0ff,
+    0 0 10px #0ff,
+    0 0 20px #0ff,
+    0 0 40px #0ff;
+  line-height: 1.1;
+  white-space: pre;
+}
+
 .subtitle {
   font-size: 1rem;
   color: #0ff;
