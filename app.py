@@ -69,7 +69,7 @@ def stylize_ascii():
 
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",
+            model="gpt-4",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=1000,
             temperature=0.7,
