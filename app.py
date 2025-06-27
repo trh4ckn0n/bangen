@@ -8,9 +8,9 @@ app = Flask(__name__)
 # Clé OpenAI (à mettre en variable d'environnement en prod)
 openai.api_key = os.getenv("OPENAI_API_KEY") or "sk-***"
 
-ASCII_CHARS = "@%#*+=-:. "
+ASCII_CHARS = "@%#*+=-:.|←→≠±Å¥$§× "
 
-def resize_image(image, new_width=100):
+def resize_image(image, new_width=150):
     width, height = image.size
     ratio = height / width / 1.8
     new_height = int(new_width * ratio)
@@ -75,7 +75,7 @@ def stylize_ascii():
         response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=1000,
+            max_tokens=2000,
             temperature=0.7,
         )
         styled_ascii = response.choices[0].message.content.strip()
