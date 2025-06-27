@@ -72,7 +72,7 @@ def stylize_ascii():
         return jsonify({"error": "Aucun ASCII reçu"}), 400
 
     prompt = (
-        "Améliore cet art ASCII pour lui donner un style cyberpunk/hacker avec effet fluo. "
+        "Améliore cet art ASCII pour le coloriser en fonction de ce qu'il represente. "
         f"La couleur dominante choisie est : {color}. "
         "Ajoute des effets visuels textuels (comme des encadrements, titres stylisés), reste en ASCII pur. "
         "Ne modifie pas l'alignement de base :\n\n"
@@ -84,7 +84,7 @@ def stylize_ascii():
             model="gpt-4",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=2000,
-            temperature=0.7,
+            temperature=0.8,
         )
         styled_ascii = response.choices[0].message.content.strip()
         return jsonify({"styled_ascii": styled_ascii})
