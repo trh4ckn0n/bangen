@@ -8,12 +8,11 @@ app = Flask(__name__)
 # Clé OpenAI (à mettre en variable d'environnement en prod)
 openai.api_key = os.getenv("OPENAI_API_KEY") or "sk-***"
 
-# Palette ASCII homogène, lisible
 ASCII_CHARS = "@%#*+=-:. "
 
 def resize_image(image, new_width=100):
     width, height = image.size
-    ratio = height / width / 1.8  # Ajuste ce ratio si besoin (1.8 bon départ)
+    ratio = height / width / 1.8
     new_height = int(new_width * ratio)
     return image.resize((new_width, new_height))
 
@@ -34,16 +33,14 @@ def image_to_ascii(image, width):
     image = sharpen_image(image)
     image = grayify(image)
     ascii_str = pixels_to_ascii(image)
-    # Recompose en lignes
     ascii_img = "\n".join(ascii_str[i:i+width] for i in range(0, len(ascii_str), width))
     return ascii_img
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     ascii_art = None
-    stylized_ascii = None
-    width = 100
     error = None
+    width = 100
 
     if request.method == "POST":
         try:
@@ -57,13 +54,10 @@ def index():
         except Exception as e:
             error = f"Erreur lors de la conversion : {e}"
 
-    return render_template("index.html", ascii_art=ascii_art, stylized_ascii=stylized_ascii, width=width, error=error)
+    return render_template("index.html", ascii_art=ascii_art, width=width, error=error)
 
 @app.route("/stylize_ascii", methods=["POST"])
 def stylize_ascii():
-    """
-    Reçoit le texte ASCII et demande à OpenAI de le styliser façon hacker neon.
-    """
     data = request.get_json(force=True)
     ascii_text = data.get("ascii_text", "")
 
@@ -90,4 +84,4 @@ def stylize_ascii():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(debug=False, host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0")
