@@ -6,7 +6,7 @@ import openai
 app = Flask(__name__)
 
 # Met ta clé API OpenAI en variable d'environnement ou ici directement (pas recommandé en prod)
-openai.api_key = os.getenv("OPENAI_API_KEY") or "ta_clef_openai_ici"
+openai.api_key = os.getenv("OPENAI_API_KEY") or "sk-***"
 
 ASCII_CHARS = "@%#*+=-:. "
 
@@ -23,6 +23,34 @@ def pixels_to_ascii(image):
     pixels = image.getdata()
     chars = "".join([ASCII_CHARS[min(pixel // 25, len(ASCII_CHARS) - 1)] for pixel in pixels])
     return chars
+
+@app.route('/api/openai-enhance', methods=['POST'])
+def openai_enhance():
+    data = request.get_json()
+    ascii_art = data.get('ascii', '')
+
+    if not ascii_art:
+        return jsonify({"error": "Aucun ASCII art fourni"}), 400
+
+    # Prépare un prompt pour améliorer l'ASCII art en style hacker neon
+    prompt = f"Améliore cet ASCII art en style hacker neon fluo, en rendant le texte plus esthétique et lisible:\n\n{ascii_art}\n\n"
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "Tu es un assistant qui améliore des ASCII art."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=500,
+            temperature=0.7,
+        )
+        enhanced_ascii = response.choices[0].message.content.strip()
+
+        return jsonify({"enhanced_ascii": enhanced_ascii})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 def image_to_ascii(image, width):
     image = resize_image(image, width)
