@@ -1,67 +1,300 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" >
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ASCII Art Generator - trhacknon</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8" />
+  <title>trhacknon ASCII Art Hacker + OpenAI</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+    body {
+      background: #111;
+      color: #0ff;
+      font-family: 'Share Tech Mono', monospace;
+      padding: 20px;
+      margin: 0;
+      text-align: center;
+      user-select: none;
+    }
+    header h1 {
+      font-size: 3rem;
+      text-shadow:
+        0 0 5px #0ff,
+        0 0 10px #0ff,
+        0 0 20px #0ff,
+        0 0 30px #0ff,
+        0 0 40px #0ff,
+        0 0 55px #0ff;
+      margin-bottom: 5px;
+      letter-spacing: 2px;
+    }
+    .subtitle {
+      font-size: 1rem;
+      margin-bottom: 25px;
+      color: #0ff;
+    }
+    form {
+      margin-bottom: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      align-items: center;
+    }
+    input[type="file"], input[type="number"], input[type="color"] {
+      background: #000;
+      border: 2px solid #0ff;
+      color: #0ff;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      user-select: text;
+    }
+    input[type="number"], input[type="color"] {
+      width: 110px;
+      text-align: center;
+    }
+    label {
+      color: #0ff;
+      font-weight: bold;
+      user-select: none;
+    }
+    button {
+      background: #0ff;
+      border: none;
+      padding: 12px 28px;
+      color: #111;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 6px;
+      box-shadow:
+        0 0 5px #0ff,
+        0 0 10px #0ff,
+        0 0 20px #0ff;
+      transition: background-color 0.3s ease;
+      user-select: none;
+      font-size: 1.1rem;
+    }
+    button:hover {
+      background: #0cc;
+      box-shadow:
+        0 0 8px #0cc,
+        0 0 16px #0cc,
+        0 0 32px #0cc;
+    }
+    .error {
+      color: #f00;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-shadow:
+        0 0 3px #f00,
+        0 0 5px #f00;
+    }
+    .result-section {
+      margin-top: 30px;
+    }
+    pre.ascii {
+      display: inline-block;
+      white-space: pre;
+      font-size: 7px;
+      line-height: 6px;
+      letter-spacing: 1px;
+      max-width: 100%;
+      padding: 10px 15px;
+      border: 1px solid #0ff;
+      border-radius: 8px;
+      background: #000;
+      color: #0ff;
+      text-shadow:
+        0 0 3px #0ff,
+        0 0 5px #0ff,
+        0 0 7px #0ff,
+        1px 1px 2px #000;
+      user-select: text;
+      font-family: 'Share Tech Mono', monospace;
+      line-break: anywhere;
+      min-height: 200px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    .buttons-download {
+      margin-top: 15px;
+    }
+    .btn {
+      display: inline-block;
+      margin: 0 12px;
+      padding: 10px 22px;
+      border: 1px solid #0ff;
+      border-radius: 6px;
+      color: #0ff;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow:
+        0 0 10px #0ff,
+        0 0 20px #0ff;
+      transition: background-color 0.3s ease;
+      cursor: pointer;
+      user-select: none;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1rem;
+    }
+    .btn:hover {
+      background: #0cc;
+      box-shadow:
+        0 0 15px #0cc,
+        0 0 30px #0cc;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.85rem;
+      color: #333;
+      user-select: none;
+    }
+  </style>
 </head>
 <body>
+
   <header>
-    <h1>ASCII Art Generator <span class="subtitle">by trhacknon</span></h1>
+    <h1>trhacknon ASCII Art + OpenAI GPT-4</h1>
+    <div class="subtitle">Upload ton image, génère et améliore le ASCII art en style hacker neon !</div>
   </header>
 
-  <form method="POST" enctype="multipart/form-data" class="form-upload">
-    <input type="file" name="image" required accept="image/png, image/jpeg" />
+  {% if error %}
+    <div class="error">{{ error }}</div>
+  {% endif %}
+
+  <form method="POST" enctype="multipart/form-data" id="form-upload">
+    <label for="image">Image (PNG/JPG) :</label>
+    <input type="file" id="image" name="image" accept="image/png,image/jpeg" required />
+
     <label for="width">Largeur :</label>
-    <input type="number" name="width" min="20" max="300" value="100" />
+    <input type="number" id="width" name="width" min="20" max="200" value="{{ width }}" />
 
-    <label for="color">Couleur :</label>
-    <input type="color" name="color" value="{{ color }}" />
+    <label for="color">Couleur neon :</label>
+    <input type="color" id="color" name="color" value="#00ffff" title="Choisir couleur neon" />
 
-    <label for="shadow">Ombre (px) :</label>
-    <input type="range" name="shadow" min="0" max="10" value="{{ shadow }}" />
-
-    <button type="submit">🖋️ Générer</button>
+    <button type="submit">Générer ASCII</button>
   </form>
 
-  {% if ascii %}
+  {% if ascii_art %}
   <section class="result-section">
-    <h2>Résultat ASCII Art</h2>
-    <pre class="ascii" style="color: {{ color }}; text-shadow:
-      0 0 {{ shadow }}px #0ffccf,
-      0 0 {{ shadow // 2 }}px #0ffccf;">
-      {{ ascii|e }}
-    </pre>
+    <pre class="ascii" id="ascii-art">{{ ascii_art }}</pre>
 
-    <div class="buttons-download">
-      <a href="{{ url_for('download_txt') }}?ascii={{ ascii|urlencode }}" class="btn">📥 Télécharger TXT</a>
-      <a href="{{ url_for('download_svg') }}?svg={{ ascii_svg|urlencode }}" class="btn">📥 Télécharger SVG</a>
-    </div>
+    <button class="btn" id="btn-openai">Améliorer avec OpenAI GPT-4</button>
 
-    <h2>SVG Preview</h2>
-    <div class="svg-preview">
-      {{ ascii_svg|safe }}
+    <div class="buttons-download" style="margin-top:20px; display:none;" id="download-section">
+      <button class="btn" id="download-txt">Télécharger .TXT</button>
+      <button class="btn" id="download-png">Télécharger .PNG</button>
     </div>
   </section>
   {% endif %}
 
-  <footer>
-    <p>© 2025 trhacknon - ASCII Art Generator</p>
-  </footer>
+  <footer>by trhacknon &mdash; style hacker neon fluo 💾</footer>
 
 <script>
-// Animation néon clignotant sur le texte ASCII (pré)
-const asciiElem = document.querySelector(".ascii");
-if(asciiElem){
-  let opacity = 1, direction = -0.05;
-  setInterval(() => {
-    opacity += direction;
-    if(opacity <= 0.5) direction = 0.05;
-    else if(opacity >= 1) direction = -0.05;
-    asciiElem.style.opacity = opacity.toFixed(2);
-  }, 50);
-}
+  const btnOpenAI = document.getElementById('btn-openai');
+  const asciiElem = document.getElementById('ascii-art');
+  const downloadTxtBtn = document.getElementById('download-txt');
+  const downloadPngBtn = document.getElementById('download-png');
+  const downloadSection = document.getElementById('download-section');
+  const colorPicker = document.getElementById('color');
+
+  // Helper download function (text)
+  function download(filename, text) {
+    const element = document.createElement('a');
+    const blob = new Blob([text], {type: 'text/plain'});
+    element.href = URL.createObjectURL(blob);
+    element.download = filename;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+
+  // Download PNG image of ASCII art rendered on canvas
+  function downloadPNG(asciiText, color) {
+    const lines = asciiText.split('\n');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const fontSize = 10;
+    const lineHeight = fontSize * 1.2;
+    const width = 1000;
+    const height = lineHeight * lines.length + 20;
+
+    canvas.width = width;
+    canvas.height = height;
+
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.font = `${fontSize}px 'Share Tech Mono', monospace`;
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 8;
+
+    for (let i = 0; i < lines.length; i++) {
+      ctx.fillText(lines[i], 10, lineHeight * (i + 1));
+    }
+
+    canvas.toBlob(function(blob) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ascii-art.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  // Gestion des téléchargements
+  if (downloadTxtBtn) {
+    downloadTxtBtn.addEventListener('click', () => {
+      download('ascii-art.txt', asciiElem.textContent);
+    });
+  }
+
+  if (downloadPngBtn) {
+    downloadPngBtn.addEventListener('click', () => {
+      downloadPNG(asciiElem.textContent, colorPicker.value);
+    });
+  }
+
+  // Appel OpenAI GPT-4 pour amélioration ASCII
+  if (btnOpenAI) {
+    btnOpenAI.addEventListener('click', async () => {
+      btnOpenAI.disabled = true;
+      btnOpenAI.textContent = "Amélioration en cours...";
+
+      try {
+        const response = await fetch('/api/openai-enhance', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ascii: asciiElem.textContent }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erreur serveur : ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (data.enhanced_ascii) {
+          asciiElem.textContent = data.enhanced_ascii;
+          downloadSection.style.display = 'block';
+        } else {
+          alert("Réponse invalide de l'API OpenAI");
+        }
+      } catch (error) {
+        alert("Erreur lors de la communication avec OpenAI : " + error.message);
+      } finally {
+        btnOpenAI.disabled = false;
+        btnOpenAI.textContent = "Améliorer avec OpenAI GPT-4";
+      }
+    });
+  }
 </script>
 
 </body>
