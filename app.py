@@ -9,7 +9,7 @@ app = Flask(__name__)
 openai.api_key = os.getenv("OPENAI_API_KEY") or "sk-..."
 
 # Palette ASCII personnalisée avec caractères spéciaux
-ASCII_CHARS = "@%#*+=-:.Å¥$§×"
+ASCII_CHARS = "@%#*+=-:."
 
 def resize_image(image, new_width=150):
     width, height = image.size
