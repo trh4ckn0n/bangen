@@ -72,7 +72,7 @@ def stylize_ascii():
         return jsonify({"error": "Aucun ASCII reçu"}), 400
 
     prompt = (
-        "Améliore cet art ASCII pour le coloriser en fonction de ce qu'il represente. "
+        "Améliore cet art ASCII pour adapter au mieu les caracteres utilisés afin de rendre le motif le plus lisible et reconnaissable possible. "
         f"La couleur dominante choisie est : {color}. "
         "Ajoute des effets visuels textuels (comme des encadrements, titres stylisés), reste en ASCII pur. "
         "Ne modifie pas l'alignement de base :\n\n"
