@@ -263,61 +263,122 @@
         padding: 12px 15px;
       }
     }
-  </style>
+  form {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  input[type="file"], input[type="number"] {
+    padding: 5px;
+    margin: 0 10px 10px 0;
+    border-radius: 5px;
+    border: none;
+    font-size: 1rem;
+  }
+  input[type="submit"], button {
+    background-color: #00ff99;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: 0.3s;
+    color: #002200;
+  }
+  input[type="submit"]:hover, button:hover {
+    background-color: #00cc77;
+  }
+  .error {
+    color: #ff5555;
+    font-weight: bold;
+    text-align: center;
+  }
+  #ascii-output, #styled-output {
+    white-space: pre;
+    background-color: #001100;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    max-height: 400px;
+    font-size: 8px;
+    line-height: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #00ff99;
+  }
+  #styled-output {
+    font-size: 8px;
+    color: #00ffcc;
+    text-shadow:
+      0 0 5px #00ffcc,
+      0 0 10px #00ffcc,
+      0 0 20px #00ffcc;
+  }
+  #btn-stylize {
+    display: block;
+    margin: 0 auto 20px auto;
+  }
+</style>
 </head>
 <body>
 
-  <header role="banner">
-    <h1 tabindex="0">trhacknon ASCII Art + OpenAI GPT-4</h1>
-    <div class="subtitle" aria-label="Description">Upload ton image, génère et améliore le ASCII art en style hacker neon !</div>
-  </header>
+<h1>ASCII Art Generator - trhacknon</h1>
 
-  {% if error %}
-    <div class="error" role="alert" aria-live="assertive">{{ error }}</div>
-  {% endif %}
+<form method="POST" enctype="multipart/form-data" id="upload-form">
+  <input type="file" name="image" accept="image/*" required />
+  <input type="number" name="width" min="20" max="200" value="{{ width }}" title="Largeur ASCII (20-200)" />
+  <input type="submit" value="Convertir en ASCII" />
+</form>
 
-  <form method="POST" enctype="multipart/form-data" id="form-upload" aria-label="Formulaire de génération ASCII Art">
-    <label for="image">Image (PNG/JPG) :</label>
-    <input type="file" id="image" name="image" accept="image/png,image/jpeg" required aria-required="true" aria-describedby="file-help" />
-    <span id="file-help" style="position:absolute; left:-9999px;">Sélectionner un fichier image au format PNG ou JPG.</span>
+{% if error %}
+  <div class="error">{{ error }}</div>
+{% endif %}
 
-    <label for="width">Largeur :</label>
-    <input type="number" id="width" name="width" min="20" max="200" value="{{ width }}" aria-describedby="width-help" />
-    <span id="width-help" style="position:absolute; left:-9999px;">Largeur maximale de l'ASCII art, entre 20 et 200.</span>
+{% if ascii_art %}
+  <h2>ASCII brut :</h2>
+  <pre id="ascii-output">{{ ascii_art }}</pre>
 
-    <label for="color">Couleur neon :</label>
-    <input type="color" id="color" name="color" value="#00ffff" title="Choisir couleur neon" aria-label="Sélecteur de couleur néon" />
+  <button id="btn-stylize">Styliser en Hacker Neon</button>
 
-    <button type="submit" aria-label="Soumettre le formulaire pour générer ASCII art">Générer ASCII</button>
-  </form>
+  <h2>ASCII stylisé :</h2>
+  <pre id="styled-output"></pre>
+{% endif %}
 
-  {% if ascii_art %}
-  <section class="result-section" aria-live="polite" aria-atomic="true" aria-relevant="additions">
-    <pre class="ascii" id="ascii-art" tabindex="0">{{ ascii_art|safe }}</pre>
+<script>
+  const btnStylize = document.getElementById("btn-stylize");
+  const asciiOutput = document.getElementById("ascii-output");
+  const styledOutput = document.getElementById("styled-output");
 
-    <div class="buttons-download">
-      <a href="data:text/plain;charset=utf-8,{{ ascii_art|urlencode }}" download="ascii_art.txt" class="btn" role="button" aria-label="Télécharger ASCII art au format texte">Télécharger TXT</a>
-      <button class="btn" id="copy-btn" type="button" aria-label="Copier ASCII art dans le presse-papiers">Copier</button>
-    </div>
-  </section>
-  {% endif %}
+  if(btnStylize) {
+    btnStylize.addEventListener("click", async () => {
+      const asciiText = asciiOutput.textContent.trim();
+      if(!asciiText) return alert("Pas d'ASCII art à styliser.");
 
-  <footer>
-    <p>© 2025 trhacknon - Projet ASCII Art & OpenAI GPT-4</p>
-  </footer>
+      btnStylize.disabled = true;
+      btnStylize.textContent = "Stylisation en cours...";
 
-  <script>
-    // Copier le contenu ASCII art dans le presse-papiers
-    document.getElementById('copy-btn')?.addEventListener('click', () => {
-      const asciiArt = document.getElementById('ascii-art').innerText;
-      if (!asciiArt) return alert('Aucun ASCII art à copier.');
-
-      navigator.clipboard.writeText(asciiArt).then(() => {
-        alert('ASCII art copié dans le presse-papiers !');
-      }).catch(err => {
-        alert('Erreur lors de la copie : ' + err);
-      });
+      try {
+        const response = await fetch("/stylize_ascii", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ ascii_text: asciiText })
+        });
+        const data = await response.json();
+        if(data.error) {
+          styledOutput.textContent = "Erreur: " + data.error;
+        } else {
+          styledOutput.textContent = data.styled_ascii;
+        }
+      } catch (err) {
+        styledOutput.textContent = "Erreur lors de la requête : " + err.message;
+      } finally {
+        btnStylize.disabled = false;
+        btnStylize.textContent = "Styliser en Hacker Neon";
+      }
     });
-  </script>
+  }
+</script>
+
 </body>
 </html>
