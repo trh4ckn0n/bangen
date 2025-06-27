@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>ASCII Art Generator</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>ASCII Art by trhacknon</h1>
+  <form method="POST" enctype="multipart/form-data">
+    <input type="file" name="image" required>
+    <input type="number" name="width" value="100" min="20" max="300">
+    <label>Couleur:</label><input type="color" name="color" value="#00ffff">
+    <label>Ombre:</label><input type="range" name="shadow" min="0" max="10" value="2">
+    <button type="submit">🖋️ Générer</button>
+  </form>
+
+  {% if ascii %}
+  <div class="ascii" style="
+    color: {{ request.form.color }};
+    text-shadow: {{ request.form.shadow }}px {{ request.form.shadow }}px 1px #000, 0 0 5px {{ request.form.color }};
+  ">
+    {{ ascii|e }}
+  </div>
+  <a href="{{ url_for('download') }}?ascii={{ ascii|urlencode }}" class="download">📥 Télécharger ASCII</a>
+  {% endif %}
+
+  {% if analysis %}
+  <div class="analysis"><b>GPT-4 Vision:</b> {{ analysis }}</div>
+  {% endif %}
+</body>
+</html>
