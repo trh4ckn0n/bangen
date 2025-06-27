@@ -336,17 +336,37 @@
 {% if ascii_art %}
   <h2>ASCII brut :</h2>
   <pre id="ascii-output">{{ ascii_art }}</pre>
+  <button id="btn-download-raw">📥 Télécharger ASCII brut</button>
 
   <button id="btn-stylize">Styliser en Hacker Neon</button>
 
   <h2>ASCII stylisé :</h2>
   <pre id="styled-output"></pre>
+  <button id="btn-download-styled" style="display:none;">📥 Télécharger ASCII stylisé</button>
 {% endif %}
 
 <script>
+  function downloadTextAsFile(text, filename) {
+    const blob = new Blob([text], { type: "text/plain" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
   const btnStylize = document.getElementById("btn-stylize");
   const asciiOutput = document.getElementById("ascii-output");
   const styledOutput = document.getElementById("styled-output");
+  const btnDownloadRaw = document.getElementById("btn-download-raw");
+  const btnDownloadStyled = document.getElementById("btn-download-styled");
+
+  if(btnDownloadRaw) {
+    btnDownloadRaw.addEventListener("click", () => {
+      const asciiText = asciiOutput.textContent.trim();
+      if(asciiText) downloadTextAsFile(asciiText, "ascii.txt");
+    });
+  }
 
   if(btnStylize) {
     btnStylize.addEventListener("click", async () => {
@@ -369,6 +389,7 @@
           styledOutput.textContent = "Erreur: " + data.error;
         } else {
           styledOutput.textContent = data.styled_ascii;
+          btnDownloadStyled.style.display = "inline-block";
         }
       } catch (err) {
         styledOutput.textContent = "Erreur lors de la requête : " + err.message;
@@ -376,6 +397,13 @@
         btnStylize.disabled = false;
         btnStylize.textContent = "Styliser en Hacker Neon";
       }
+    });
+  }
+
+  if(btnDownloadStyled) {
+    btnDownloadStyled.addEventListener("click", () => {
+      const styledText = styledOutput.textContent.trim();
+      if(styledText) downloadTextAsFile(styledText, "ascii_styled.txt");
     });
   }
 </script>
