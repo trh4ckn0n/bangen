@@ -9,7 +9,7 @@ app = Flask(__name__)
 openai.api_key = os.getenv("OPENAI_API_KEY") or "sk-..."
 
 # Palette ASCII personnalisée avec caractères spéciaux
-ASCII_CHARS = "@§#×    ⋅ "
+ASCII_CHARS = "@§#×  ✰ ⋅ "
 #ASCII_CHARS = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
 #ASCII_CHARS = "@%#◍×✰○⋅ "
 
