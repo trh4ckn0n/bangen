@@ -1,23 +1,215 @@
 body {
-  background: #111;
+  background-color: #111;
   color: #0ff;
   font-family: monospace;
   padding: 20px;
+  margin: 0;
   text-align: center;
 }
+
+header h1 {
+  font-size: 2.4rem;
+  text-shadow:
+    0 0 5px #0ff,
+    0 0 10px #0ff,
+    0 0 20px #0ff,
+    0 0 30px #0ff,
+    0 0 40px #0ff,
+    0 0 55px #0ff;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #0ff;
+  text-shadow: none;
+  margin-left: 10px;
+}
+
+.form-upload {
+  margin-bottom: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-upload input[type="file"] {
+  color: transparent;
+}
+
+.form-upload label {
+  font-weight: bold;
+  margin-left: 10px;
+  margin-right: 5px;
+}
+
+.form-upload input[type="number"],
+.form-upload input[type="color"],
+.form-upload input[type="range"] {
+  width: 80px;
+}
+
+button {
+  background: #0ff;
+  border: none;
+  padding: 10px 20px;
+  color: #111;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow:
+    0 0 5px #0ff,
+    0 0 10px #0ff,
+    0 0 20px #0ff;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background: #0cc;
+}
+
+.result-section {
+  margin-top: 20px;
+}
+
 .ascii {
   white-space: pre;
+  font-size: 7px;
   line-height: 6px;
   letter-spacing: 1px;
-  animation: flicker 1.5s infinite alternate;
+  margin: 0 auto;
+  max-width: 100%;
+  text-shadow:
+    0 0 3px #0ff,
+    0 0 5px #0ff,
+    0 0 7px #0ff;
 }
-.download {
-  margin-top: 15px; padding: 8px 16px;
-  background: #000; color: inherit;
-  border: 1px solid currentColor;
+
+.buttons-download {
+  margin: 15px 0;
+}
+
+.buttons-download .btn {
+  display: inline-block;
+  margin: 0 10px;
+  padding: 8px 16px;
+  border: 1px solid #0ff;
+  border-radius: 5px;
+  color: #0ff;
   text-decoration: none;
+  font-weight: bold;
+  box-shadow:
+    0 0 10px #0ff,
+    0 0 20px #0ff;
+  transition: background-color 0.3s ease;
 }
-@keyframes flicker {
-  0%,100% { opacity: 1; }
-  50% { opacity: .8; }
+
+.buttons-download .btn:hover {
+  background: #0cc;
+}
+
+.svg-preview {
+  margin-top: 20px;
+  display: inline-block;
+  background: #111;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow:
+    0 0 10px #0ff,
+    0 0 20px #0ff,
+    0 0 40px #0ff;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+footer {
+  margin-top: 40px;
+  font-size: 0.9rem;
+  color: #0ff;
+  text-shadow:
+    0 0 5px #0ff,
+    0 0 10px #0ff;
+}
+
+footer p {
+  margin: 0;
+}
+
+/* Animation légère néon sur header */
+@keyframes neonGlow {
+  0%, 100% {
+    text-shadow:
+      0 0 5px #0ff,
+      0 0 10px #0ff,
+      0 0 20px #0ff,
+      0 0 30px #0ff,
+      0 0 40px #0ff,
+      0 0 55px #0ff;
+    color: #0ff;
+  }
+  50% {
+    text-shadow:
+      0 0 8px #0ff,
+      0 0 15px #0ff,
+      0 0 25px #0ff,
+      0 0 35px #0ff,
+      0 0 50px #0ff,
+      0 0 70px #0ff;
+    color: #0cc;
+  }
+}
+
+header h1 {
+  animation: neonGlow 3s ease-in-out infinite;
+}
+
+/* Style input range personnalisé */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 80px;
+  height: 6px;
+  background: #222;
+  border-radius: 3px;
+  cursor: pointer;
+  box-shadow:
+    0 0 5px #0ff;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #0ff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow:
+    0 0 8px #0ff;
+  transition: background-color 0.3s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  background-color: #0cc;
+  box-shadow:
+    0 0 12px #0cc;
+}
+
+/* Firefox */
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #0ff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow:
+    0 0 8px #0ff;
+  transition: background-color 0.3s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  background-color: #0cc;
+  box-shadow:
+    0 0 12px #0cc;
 }
